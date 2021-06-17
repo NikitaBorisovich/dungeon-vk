@@ -4,17 +4,80 @@
 </head>
 <body>
 <?php
-
-if (isset($_POST['dungeonSize'])) { $dungeonSize = $_POST['dungeonSize']; if ($dungeonSize == '') { unset($dungeonSize);} }
-if (isset($_POST['dungeonMap'])) { $dungeonMap=$_POST['dungeonMap']; if ($dungeonMap =='') { unset($dungeonMap);} }
-
-class Dungeon
+class Chest
 {
-	private $dungeonSize;
-	private $roomCount;
-	private Room rooms = [];
-}
+	private $chestType="";
+	private $chestScore=0;
 
+	public function SetType($_chestType)
+	{
+		$this->chestType=$_chestType;
+		if( $this->chestType=="common")
+		{
+			$this->chestScore=rand(0, 5);
+		}
+		if( $this->chestType=="rare")
+		{
+			$this->chestScore=rand(5, 10);
+		}
+		if( $this->chestType=="epic")
+		{
+			$this->chestScore=rand(10, 25);
+		}
+	}
+	public function GetType()
+	{
+		return $this->chestType;
+	}
+	public function GetScore()
+	{
+		return $this->chestScore;
+	}
+}
+class Enemy
+{
+	private $enemyType="";
+	private $enemiescore=0;
+	private $enemyPower=0;
+	private $enemyPowerLose=0;
+	
+	public function SetType($_enemyType)
+	{
+		$this->enemyType=$_enemyType;
+		if( $this->enemyType=="fly")
+		{
+			$this->enemiescore=rand(2, 7);
+			$this->enemyPowerLose=rand(1, 5);
+		}
+		if( $this->enemyType=="under")
+		{
+			$this->enemiescore=rand(5, 15);
+			$this->enemyPowerLose=rand(3, 9);
+		}
+		if( $this->enemyType=="boss")
+		{
+			$this->enemiescore=rand(10, 25);
+			$this->enemyPowerLose=rand(5, 13);
+		}
+		$enemyPower=$enemiescore;
+	}
+	public function GetType()
+	{
+		return $this->enemyType;
+	}
+	public function GetCurrentPower()
+	{
+		$this->enemyPower;
+	}
+	public function Damage()
+	{
+		$this->enemyPower -= $this->enemyPowerLose;
+	}
+	public function Lose()
+	{
+		return $this->enemiescore;
+	}
+}
 class Room
 {
 	private $roomType="";
@@ -29,52 +92,116 @@ class Room
 
 	private $isVisited=false;
 
-	private Chest chests = [];
-	private Enemy enemies = [];
-}
+	private $chest;
+	private $enemy;
 
-class Chest
+	public function SetType($_roomType)
+	{
+		$this->roomType=$_roomType;
+	}
+	public function GetType()
+	{
+		return $this->roomType;
+	}
+	public function SetPosition($_positionX,$_positionY)
+	{
+		$this->posX = $_positionX;
+		$this->posY = $_positionY;
+	}
+	public function GetPositionX()
+	{
+		return $this->posX;
+	}
+	public function GetPositionY()
+	{
+		return $this->posY;
+	}
+	public function SetDoor()	
+	{
+		$this->doorUp = $_doorUp;
+		$this->doorRight = $_doorRight;
+		$this->doorDown = $_doorDown;
+		$this->doorLeft = $_doorLeft;
+	}
+	public function GetDoorUP()	
+	{
+		return $this->doorUp;
+	}
+	public function GetDoorRight()	
+	{
+		return $this->doorRight;
+	}
+	public function GetDoorDown()	
+	{
+		return $this->doorDown;
+	}
+	public function GetDoorLeft()	
+	{
+		return $this->doorLeft;
+	}
+	public function SetChest($_chest)
+	{
+		$this->chest= $_chest;
+	}
+	public function GetChest()
+	{
+		return $this->chest;
+	}
+	public function SetEnemy($_enemy)
+	{
+		$this->enemy = $_enemy;
+	}
+	public function GetEnemy()
+	{
+		return $this->enemy;
+	}
+	public function VisitRoom()
+	{
+		$this->isVisited = true;
+	}
+	public function GetVisitRoom()
+	{
+		return $this->isVisited;
+	}
+}
+class Dungeon
 {
-	private $chestType;
-	private $chestScore=0;
+	private $dungeonSize;
+	private $roomCount;
+	private $rooms = [];
 
-	if( $chestType=="common")
+	public function SetDungeonSize($_dungeonSize)
 	{
-		$chestScore=rand(0, 5);
+		$this->dungeonSize=$_dungeonSize;
 	}
-	if( $chestType=="rare")
+	public function GetDungeonSize()
 	{
-		$chestScore=rand(5, 10);
+		return $this->dungeonSize;
+	
+	}public function SetRoomCount($_roomCount)
+	{
+		$this->roomCount=$_roomCount;
 	}
-	if( $chestType=="epic")
+	public function GetRoomCount()
 	{
-		$chestScore=rand(10, 25);
+		return $this->roomCount;
+	}
+	public function SetRoom(...$_rooms)
+	{
+		foreach ($_rooms as $room) {
+			$rooms[] = $room;
+		}
+	}
+	public function GetRoom($_positionX,$_positionY)
+	{
+		foreach ($rooms as $room) {
+			if($room->GetPositionX()==$_positionX && $room->GetPositionY()==$_positionY)
+			{
+				return $room;
+			}
+		}
 	}
 }
-class Enemy
-{
-	private $enemyType;
-	private $enemiescore=0;
-	private $enemyPower=$enemiescore;
-	private $enemyPowerLose=0;
-
-	if( $chestType=="fly")
-	{
-		$enemiescore=rand(2, 7);
-		$enemyPowerLose=rand(1, 5);
-	}
-	if( $chestType=="under")
-	{
-		$enemiescore=rand(5, 15);
-		$enemyPowerLose=rand(3, 9);
-	}
-	if( $chestType=="boss")
-	{
-		$enemiescore=rand(10, 25);
-		$enemyPowerLose=rand(5, 13);
-	}
-}
-
 class Player
 {
 	private $score = 0;
@@ -96,30 +223,31 @@ class Player
 
 	public function Interact(&$dungeon)
 	{
-		if($dungeon.rooms.posX = $this->posX && $dungeon.rooms.posY = $this->posY && $dungeon.rooms.roomType == "chestRoom" && !$isVisited)
+		$room = &$dungeon->GetRoom($this->posX, $this->posY);
+		if($room->GetType() == "chestRoom" && !$room->GetVisitRoom())
 		{
-			AddScore($dungeon.rooms.chests.score);
-			$dungeon.rooms.isVisited=true;
+			AddScore($room->GetChest()->GetScore());
+			$room->VisitRoom();
 		}
-		if($dungeon.rooms.posX = $this->posX && $dungeon.rooms.posY = $this->posY && $dungeon.rooms.roomType == "enemyRoom" && !$isVisited)
+		if($room->GetType() == "enemyRoom" && !$room->GetVisitRoom())
 		{
-			while($dungeon.rooms.enemies.enemyPower>0)
+			$enemy = &$room->GetEnemy();
+			while($enemy->GetCurrentPower()>0)
 			{
 				$damage=rand(0, 26);
-				if($damage<$dungeon.rooms.enemies.enemyPower)
+				if($damage<$enemy->GetCurrentPower())
 				{
-					$dungeon.rooms.enemies.enemyPower-=$dungeon.rooms.enemies.enemyPowerLose;
+					$enemy->Damage();
 				}
 			}
-			AddScore($dungeon.rooms.enemies.enemiescore);
-			$dungeon.rooms.isVisited=true;
+			AddScore($enemy->GetScore());
+			$room->VisitRoom();
 		}
-		if($dungeon.rooms.posX = $this->posX && $dungeon.rooms.posY = $this->posY && $dungeon.rooms.roomType == "finishRoom")
+		if($room->GetType() == "finishRoom")
 		{
 			$plyScoreFile = 'plyScore.txt';
-			$scoreText = 'Score: '. $ply->GetScore();
+			$scoreText = ''.$ply->GetScore();
 			file_put_contents($plyScoreFile, $scoreText);
-			Restart();
 		}
 
 	}
@@ -135,41 +263,66 @@ class Player
 	echo "($this->posX;$this->posY)<br>";
 	}
 
-	function Move ( $_side, $_canMove, $dungeon)
+	function Move ( $_side, $_canMove, &$dungeon)
 	{
-		if($_side=="up" && $dungeon.rooms.doorUp)
+		$room = &$dungeon->GetRoom($this->posX, $this->posY);
+		if($_side=="up" && $room->GetDoorUP())
 		{
 			$positionY ++;
-			Interact(&$dungeon);
+			Interact($dungeon);
 		}
-		if($_side=="right" && $dungeon.rooms.doorRight)
+		if($_side=="right" && $room->GetDoorRight())
 		{
 			$positionX ++;
-			Interact(&$dungeon);
+			Interact($dungeon);
 		}
-		if($_side=="down" && $dungeon.rooms.doorDown)
+		if($_side=="down" && $room->GetDoorDown())
 		{
 			$positionY --;
-			Interact(&$dungeon);
+			Interact($dungeon);
 		}
-		if($_side=="left" && $dungeon.rooms.doorLeft)
+		if($_side=="left" && $room->GetDoorLeft())
 		{
 			$positionX --;
-			Interact(&$dungeon);
+			Interact($dungeon);
 		}
 	}
 
 }
+$dungeon = new Dungeon();
+if (isset($_POST['dungeonSize'])) 
+{ 
+	$dungeon->SetDungeonSize($_POST['dungeonSize']);
+}
+if (isset($_POST['dungeonSize'])) 
+{ 
+	$dungeon->SetRoomCount($_POST['roomCount']);
+}
+if (isset($_POST['rooms'])) 
+{ 
+	$dungeon->SetRoom($_POST['rooms']);
+}
+function SetRoom($roomPosX,$roomPosY,$roomType,$chestType,$enemyType)
+{
+	$room = &$dungeon->GetRoom($_POST[$roomPosX],$_POST[$roomPosY]);
+	$room->SetType($_POST[$roomType]);
+	if($room->GetType() == "chestRoom")
+	{
+		$chest = new Chest();
+		$chest->SetType($_POST[$chestType]);
+		$room->SetChest($chest);
+	}	
+	if($room->GetType() == "enemyRoom")
+	{
+		$enemy = new Enemy();
+		$enemy->SetType($_POST[$enemyType]);
+		$room->SetChest($enemy);
+	}
+}
 $ply = new Player();
-echo "Score: ". $ply->GetScore() . "<br>";
-$ply->displayPosition();
 $StartRoomPosX=$_GET["StartRoomPosX"];
 $StartRoomPosY=$_GET["StartRoomPosY"];
 $ply->Spawn($StartRoomPosX,$StartRoomPosY);
-$ply->displayPosition();
-$plyScoreFile = 'plyScore.txt';
-$scoreText = 'Score: '. $ply->GetScore();
-file_put_contents($plyScoreFile, $scoreText);
 ?>
 </body>
 </html>
